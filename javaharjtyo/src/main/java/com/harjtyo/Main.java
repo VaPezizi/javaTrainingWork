@@ -1,9 +1,9 @@
 package com.harjtyo;
-//import org.json.JSONObject;
+//import com.harjtyo.javaFx;
 
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        javaFx.launch(javaFx.class, args);
     }
 }
