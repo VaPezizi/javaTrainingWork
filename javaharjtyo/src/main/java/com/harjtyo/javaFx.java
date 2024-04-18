@@ -62,9 +62,24 @@ public class javaFx extends Application{
         Text teksti = new Text();
         teksti.setText(teksti.getText() + textHandler.jArrToText().getText());
 
+
+
         ScrollPane scrollPane = new ScrollPane(teksti);
-        scrollPane.setFitToHeight(true);
-        Asettelu.setRight(scrollPane);
+        //scrollPane.setFitToHeight(true);
+        scrollPane.setMinWidth(400);
+        scrollPane.setMaxHeight(650);
+        
+        //Yeah yeah i know its ugly to do it this way
+        Label mittaustenTitle = new Label("Aika: \t\t\t\tKosteus:\t\tLampotila:\tPaine:");
+
+        //FlowPane for the scrollpane and the Labels
+        FlowPane rightFlowPane = new FlowPane();
+        rightFlowPane.setPadding(new Insets(10));
+        rightFlowPane.setHgap(10);
+        rightFlowPane.getChildren().addAll(mittaustenTitle, scrollPane);
+        rightFlowPane.setPrefHeight(400);
+        rightFlowPane.setMaxHeight(400);
+        Asettelu.setRight(rightFlowPane);
         
         //Insets buttonInsets = new Insets(5);
         //Creating buttons for different sorting methods
@@ -124,6 +139,8 @@ public class javaFx extends Application{
 
         Button paineButton = new Button("Paine");
 
+        Button clearButton = new Button("Palauta");
+
         FlowPane tekstit = new FlowPane();
         tekstit.setPadding(new Insets(10));
         tekstit.setHgap(20);
@@ -144,10 +161,15 @@ public class javaFx extends Application{
         aikaValiHBox.setSpacing(10);
         aikaValiHBox.getChildren().addAll(dateDataField, new Text("-"), dateDataField2);
 
+        HBox dateDataBox = new HBox();
+        dateDataBox.setPadding(new Insets(10));
+        dateDataBox.setSpacing(10);
+        dateDataBox.getChildren().addAll(dateDataButton, clearButton);
+
 
         datainFlowPane.getChildren().addAll(input1Label, input2Label, kosteusTextField,
         input3Label, lampoTextField, input4Label, paineTextField, dataAddButton, input5Label, 
-        deleteTextField, dataRemoveButton, deleteText, dateDataLabel, aikaValiHBox, dateDataButton);
+        deleteTextField, dataRemoveButton, deleteText, dateDataLabel, aikaValiHBox, dateDataBox);
 
 
         //datainFlowPane.getChildren().add(aikaTextField);
@@ -239,6 +261,9 @@ public class javaFx extends Application{
             //fetchedData.setText(textHandler.searchData(dateDataField.getText(), dateDataField2.getText()));
             teksti.setText(textHandler.searchData(dateDataField.getText(), dateDataField2.getText()).getText());
 
+        }));
+        clearButton.setOnAction((event -> {
+            teksti.setText(textHandler.textSort("Aika").getText());
         }));
         /*
         

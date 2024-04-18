@@ -15,10 +15,12 @@ import java.util.Comparator;
 
 public class textProcess {
     private JSONArray jArr;
+    //private JSONArray jArrCp;
     private ArrayList<JSONObject> JArrList;
 
     public textProcess(JSONArray jArr){
         this.jArr = jArr;
+        //this.jArrCp=jArr;
         this.JArrList = JsonArrayToList();
     }
     public Text jArrToText(){
@@ -55,7 +57,12 @@ public class textProcess {
                 teksti.setText(teksti.getText() + jsonObject.getString("Aika") + "\t" + formatter.format(jsonObject.getDouble("Kosteus")) + "\t" + formatter.format(jsonObject.getDouble("Lampotila")) + "\t" + formatter.format(jsonObject.getDouble("Paine")) + "\t" +  "\n");
             }
         }
-        return teksti;
+   
+        if (teksti.getText().equals("") == false){
+            return teksti;
+        }else{
+            return new Text("Tältä aikaväliltä ei löydy mittauksia");
+        }
     }
 
     public void addData(String kosteus, String lampo, String paine){
@@ -68,6 +75,7 @@ public class textProcess {
         
         this.JArrList.add(data);
         this.jArr.put(data);
+        //this.jArrCp.put(data);
         dataProcessor.kirjoitaTiedostoon(this.jArr);
     }
     /*
