@@ -4,36 +4,25 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
-//import java.util.ArrayList;
-//import java.util.Collection;
-//import java.util.Collections;
-
-//import org.json.JSONObject;
 
 import javafx.application.Application;  // sovellus
 import javafx.stage.Stage;              // (pää)ikkuna
 
-//import javafx.geometry.Orientation;  
 import javafx.scene.Scene;              // näkymä
 import javafx.scene.layout.BorderPane;  // asettelu
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.geometry.HPos;
-//import javafx.geometry.Pos;             // komponentin sijoittelu
+
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-//import javafx.geometry.Pos;          // komponentin reunukset (padding)
+
 import javafx.scene.control.Label;      // komponentti (teksti)
 import javafx.scene.control.Button;     // komponentti (painike)
 
-//import javafx.scene.layout.StackPane;  
-//import javafx.stage.Stage;  
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-// c, kommentoitu ulos kohdassa d
-//import javafx.event.EventHandler;       // tapahtumankäsittely
-//import javafx.event.ActionEvent;        // tapahtumankäsittely
 
 public class javaFx extends Application{
     // d
@@ -41,36 +30,26 @@ public class javaFx extends Application{
 
     @Override
     public void start(Stage ikkuna) {
-        // c, muokattu d-kohdassa Noppa n1 => this.n1
-        //this.n1 = new Noppa();
-        /*ScrollBar scrollBar = new ScrollBar();
-        scrollBar.setOrientation(Orientation.VERTICAL);  
-        scrollBar.setUnitIncrement(1);
-        scrollBar.setBlockIncrement(1);
-        scrollBar.setValue(0);*/
 
         Label otsikkoLabel = new Label("Mittaukset");
 
         BorderPane Asettelu = new BorderPane();
 
         Asettelu.setPadding(new Insets(5));
-        //noppaAsettelu.setRight(scrollBar);
         Asettelu.setTop(otsikkoLabel);
-        
 
+        //Making the textHandle object with data read from the "data.json" file. The data is read with "dataProcessor.lueData"
         textProcess textHandler = new textProcess(dataProcessor.lueData("./javaharjtyo/src/main/java/com/harjtyo/data.json"));
-        Text teksti = new Text();
-        teksti.setText(teksti.getText() + textHandler.jArrToText().getText());
-
-
+        //Text teksti = new Text(textHandler.jArrToText().getText());
+        Text teksti = new Text(textHandler.textSort("Aika").getText());
+        //teksti.setText();
 
         ScrollPane scrollPane = new ScrollPane(teksti);
-        //scrollPane.setFitToHeight(true);
-        scrollPane.setMinWidth(400);
+        scrollPane.setMinWidth(500);
         scrollPane.setMaxHeight(650);
         
         //Yeah yeah i know its ugly to do it this way
-        Label mittaustenTitle = new Label("Aika: \t\t\t\tKosteus:\t\tLampotila:\tPaine:");
+        Label mittaustenTitle = new Label("Aika: \t\t\t\tKosteus:\t\tLampotila:\tPaine:\t\tSähkökäyttö:");
 
         //FlowPane for the scrollpane and the Labels
         FlowPane rightFlowPane = new FlowPane();
@@ -81,32 +60,31 @@ public class javaFx extends Application{
         rightFlowPane.setMaxHeight(400);
         Asettelu.setRight(rightFlowPane);
         
-        //Insets buttonInsets = new Insets(5);
         //Creating buttons for different sorting methods
         Button aikaButton = new Button("Aika");
         Label lajitteluLabel = new Label("Lajittelu: Aika, Uusin ensin");
 
         //Input field and labels for time input column
-
         Label input1Label = new Label("Lisää mittaus:");
-
-        
-
-        //TextField aikaTextField = new TextField("");
-        //aikaTextField.setMaxWidth(170);
 
         //Input field and labels for dampness
         Label input2Label = new Label("Kosteus: ");
         TextField kosteusTextField = new TextField();
         kosteusTextField.setMaxWidth(170);
+
         //Input fields and labels for temperature
         Label input3Label = new Label("Lampotila: ");
         TextField lampoTextField = new TextField();
         lampoTextField.setMaxWidth(170);
+
         //Input field and label for pressure:
         Label input4Label = new Label("Paine: ");
         TextField paineTextField = new TextField();
         paineTextField.setMaxWidth(170);
+
+        Label sahkoLabel = new Label("Sahkönkulutus: ");
+        TextField sahkoTextField = new TextField();
+        sahkoTextField.setMaxWidth(170);
 
         //Label and input field for removing data
         //I decided to make the data removal be done by entering a specific time
@@ -117,12 +95,10 @@ public class javaFx extends Application{
         //Label and input for fetching data by date
         Label dateDataLabel = new Label("Hae tietyn ajan mittaukset:");
         ArrayList<JSONObject> JsonArray = textHandler.getArrayList();
-        TextField dateDataField = new TextField(JsonArray.get(JsonArray.size() - 1).getString("Aika"));
+        TextField dateDataField = new TextField(JsonArray.get(0).getString("Aika"));
         dateDataField.setMaxWidth(170);
-        TextField dateDataField2 = new TextField(JsonArray.get(0).getString("Aika"));
-        //Label fetchedData = new Label("Aika: (Huom annettava muodossa: 'year/month/day hour:minute:second)");
-        //fetchedData.setMinWidth(170);
-        //fetchedData.setMaxWidth(300);
+        TextField dateDataField2 = new TextField(JsonArray.get(JsonArray.size() -1).getString("Aika"));
+
         //Text for telling if text removal worked
         Text deleteText = new Text("");
 
@@ -139,12 +115,14 @@ public class javaFx extends Application{
 
         Button paineButton = new Button("Paine");
 
-        Button clearButton = new Button("Palauta");
+        Button sahkoButton = new Button("Sähkö");
 
+        Button clearButton = new Button("Palauta");
+        
         FlowPane tekstit = new FlowPane();
         tekstit.setPadding(new Insets(10));
         tekstit.setHgap(20);
-        tekstit.getChildren().addAll(aikaButton, kosteusButton, lampotilaButton, paineButton);
+        tekstit.getChildren().addAll(aikaButton, kosteusButton, lampotilaButton, paineButton, sahkoButton);
         tekstit.getChildren().addAll(lajitteluLabel);
         tekstit.setMaxWidth(500);
         //tekstit.getChildren().addAll(inputLabel, textField);
@@ -168,7 +146,7 @@ public class javaFx extends Application{
 
 
         datainFlowPane.getChildren().addAll(input1Label, input2Label, kosteusTextField,
-        input3Label, lampoTextField, input4Label, paineTextField, dataAddButton, input5Label, 
+        input3Label, lampoTextField, input4Label, paineTextField, sahkoLabel, sahkoTextField , dataAddButton, input5Label, 
         deleteTextField, dataRemoveButton, deleteText, dateDataLabel, aikaValiHBox, dateDataBox);
 
 
@@ -194,7 +172,7 @@ public class javaFx extends Application{
                 teksti.setText(textHandler.textSort("Aika").getText());
                 lajitteluLabel.setText("Lajittelu: Aika, Uusin ensin");
             }else{
-                teksti.setText(textHandler.textSort("AikaReverse").getText());
+                teksti.setText(textHandler.textSort("Reverse").getText());
                 lajitteluLabel.setText("Lajittelu: Aika, Vanhin ensin");
             }
             //silmaluku.setText(String.valueOf(n1.getSilmaluku()));
@@ -206,7 +184,7 @@ public class javaFx extends Application{
                 teksti.setText(textHandler.textSort("Kosteus").getText());
                 lajitteluLabel.setText("Lajittelu: Kosteus, Isoin ensin");
             }else{
-                teksti.setText(textHandler.textSort("KosteusReverse").getText());
+                teksti.setText(textHandler.textSort("Reverse").getText());
                 lajitteluLabel.setText("Lajittelu: Kosteus, Pienin ensin");
             }
             //silmaluku.setText(String.valueOf(n1.getSilmaluku()));
@@ -218,7 +196,7 @@ public class javaFx extends Application{
                 teksti.setText(textHandler.textSort("Lampotila").getText());
                 lajitteluLabel.setText("Lajittelu: Lampotila, Isoin ensin");
             }else{
-                teksti.setText(textHandler.textSort("LampotilaReverse").getText());
+                teksti.setText(textHandler.textSort("Reverse").getText());
                 lajitteluLabel.setText("Lajittelu: Lampotila, Pienin ensin");
             }
             //silmaluku.setText(String.valueOf(n1.getSilmaluku()));
@@ -230,26 +208,44 @@ public class javaFx extends Application{
                 teksti.setText(textHandler.textSort("Paine").getText());
                 lajitteluLabel.setText("Lajittelu: Paine, Isoin ensin");
             }else{
-                teksti.setText(textHandler.textSort("PaineReverse").getText());
+                teksti.setText(textHandler.textSort("Reverse").getText());
                 lajitteluLabel.setText("Lajittelu: Paine, Pienin ensin");
             }
             //silmaluku.setText(String.valueOf(n1.getSilmaluku()));
             }
         ));
+
+        sahkoButton.setOnAction((event -> {
+            //Text teksti = textHandler.textSort("Aika");
+            if (lajitteluLabel.getText() != "Lajittelu: Sähkö, Isoin ensin") {
+                teksti.setText(textHandler.textSort("Sahko").getText());
+                lajitteluLabel.setText("Lajittelu: Sähkö, Isoin ensin");
+            }else{
+                teksti.setText(textHandler.textSort("Reverse").getText());
+                lajitteluLabel.setText("Lajittelu: Sähkö, Pienin ensin");
+            }
+            //silmaluku.setText(String.valueOf(n1.getSilmaluku()));
+            }
+        ));
+
+        //Lamda for the button that adds data by input
         dataAddButton.setOnAction((event -> {
             //String aika = aikaTextField.getText();
             String kosteus = kosteusTextField.getText();
             String lampo = lampoTextField.getText();
             String paine = paineTextField.getText();
+            String sahko = sahkoTextField.getText();
             String regex = "\\d+";
-            if(kosteus.matches(regex) && lampo.matches(regex) && paine.matches(regex)){
-                textHandler.addData(kosteus, lampo, paine);
+            //Seeing if input data matches the specified regex, wich needs to be decimals
+            if(kosteus.matches(regex) && lampo.matches(regex) && paine.matches(regex) && sahko.matches(regex)){
+                textHandler.addData(kosteus, lampo, paine, sahko);
                 teksti.setText(textHandler.textSort("Aika").getText());
                 lajitteluLabel.setText("Lajittelu: Aika, Uusin ensin");
             }else{
                 input1Label.setText("Virheellinen Syöte!");
             }
         }));
+        //Lamda for the button that removes data by input
         dataRemoveButton.setOnAction((event -> {
             String aika = deleteTextField.getText();
             deleteText.setText(textHandler.removeData(aika));
@@ -264,73 +260,11 @@ public class javaFx extends Application{
         }));
         clearButton.setOnAction((event -> {
             teksti.setText(textHandler.textSort("Aika").getText());
+            lajitteluLabel.setText("Lajittelu: Aika, Uusin ensin");
         }));
-        /*
         
-        noppaAsettelu.setTop(tahot);
-        BorderPane.setAlignment(noppaAsettelu.getTop(), Pos.CENTER);
-        noppaAsettelu.setLeft(vahenna);
-        noppaAsettelu.setCenter(silmaluku);
-        
-        noppaAsettelu.setBottom(heita);
-        BorderPane.setAlignment(noppaAsettelu.getBottom(), Pos.CENTER);
-
-        Scene nakyma = new Scene(noppaAsettelu);
-        ikkuna.setScene(nakyma);
-
-        // e
-        paivitaNoppa(noppaAsettelu);
-        */
-        // c
-        /*
-
-        
-
-        heita.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                n1.heita();
-                silmaluku.setText(String.valueOf(n1.getSilmaluku()));
-            }
-        });
-        */
-        
-        // c - edellinen nk. Lambda-lausekkeella:
-        /*
-        heita.setOnAction((event) -> {
-            n1.heita();
-            silmaluku.setText(String.valueOf(n1.getSilmaluku()));
-        });
-        
-
-        // d - edellinen refaktoroituna käyttämään paivitaNoppa-metodia
-        heita.setOnAction((event) -> {
-            System.out.println("heitetty");
-            
-        });
-
-        // e
-        vahenna.setOnAction((event) -> {
-            System.out.println("vahennettu");
-        });
-
-        lisaa.setOnAction((event) -> {
-            System.out.println("lisatty");
-        });
-        
-        // a
-        ikkuna.setTitle("Ikkuna");
-        ikkuna.show();*/
     }
 
-    // d
-    /*public void paivitaNoppa(BorderPane noppaAsettelu) {
-        Label tahot = (Label)noppaAsettelu.getTop();
-        Label silmaluku = (Label)noppaAsettelu.getCenter();
-        
-        //tahot.setText("d" + this.n1.getTahoja());
-        //silmaluku.setText(String.valueOf(this.n1.getSilmaluku()));
-    }*/
 
     public static void main(String[] args) {
         //launch(JavaFxNoppa.class, args);

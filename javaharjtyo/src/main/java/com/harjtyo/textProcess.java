@@ -27,18 +27,18 @@ public class textProcess {
         //Converts JSONArray to Text for the GUI
         Text teksti = new Text();
         try{
+            DecimalFormat formatter = new DecimalFormat("#0.0000000");
             for(int i = 0; i < this.jArr.length();i++){      
                 //jArray.get for some reason returns an Object and not an JSONObject, so casting i to JSONObj here
                 JSONObject jObj = ((JSONObject) jArr.get(i));
-                DecimalFormat formatter = new DecimalFormat("#0.0000000");
-                teksti.setText(teksti.getText() + jObj.getString("Aika") + "\t" + formatter.format(jObj.getDouble("Kosteus")) + "\t" + formatter.format(jObj.getDouble("Lampotila")) + "\t" + formatter.format(jObj.getDouble("Paine")) + "\t" +  "\n");
+                teksti.setText(teksti.getText() + jObj.getString("Aika") + "\t" + formatter.format(jObj.getDouble("Kosteus")) + "\t" + formatter.format(jObj.getDouble("Lampotila")) + "\t" + formatter.format(jObj.getDouble("Paine")) + "\t" + formatter.format(jObj.getDouble("Sahko")) +"\n");
             }
         }catch (Exception e){
             return teksti;
         }
         return teksti;
     }
-
+    //Returns a Text Object with only the text between 2 given times in the ArrayList. 
     public Text searchData(String aika, String aika2){
         /*for (JSONObject jsonObject : JArrList) {
             if(jsonObject.getString("Aika").equals(aika)){
@@ -54,24 +54,26 @@ public class textProcess {
         for(JSONObject jsonObject:JArrList){
             Long jAika = Long.valueOf(jsonObject.getString("Aika").replaceAll("[^0-9]", ""));
             if(aikaLong <= jAika && (aika2Long - jAika > 0)){
-                teksti.setText(teksti.getText() + jsonObject.getString("Aika") + "\t" + formatter.format(jsonObject.getDouble("Kosteus")) + "\t" + formatter.format(jsonObject.getDouble("Lampotila")) + "\t" + formatter.format(jsonObject.getDouble("Paine")) + "\t" +  "\n");
+                teksti.setText(teksti.getText() + jsonObject.getString("Aika") + "\t" + formatter.format(jsonObject.getDouble("Kosteus")) + "\t" + formatter.format(jsonObject.getDouble("Lampotila")) + "\t" + formatter.format(jsonObject.getDouble("Paine")) + "\t"  + formatter.format(jsonObject.getDouble("Sahko")) +  "\n");
             }
         }
-   
         if (teksti.getText().equals("") == false){
             return teksti;
         }else{
             return new Text("Tältä aikaväliltä ei löydy mittauksia");
         }
     }
-
-    public void addData(String kosteus, String lampo, String paine){
+    /*
+     * Adds given data to the JSONArray and ArrayList attributes and uses the dataProcessor class to write the new data to a file.
+     */
+    public void addData(String kosteus, String lampo, String paine, String sahko){
         JSONObject data = new JSONObject();
         LocalDateTime aika = LocalDateTime.now();
         data.put("Aika", DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(aika));
         data.put("Kosteus", kosteus);
         data.put("Lampotila", lampo);
         data.put("Paine", paine);
+        data.put("Sahko", sahko);
         
         this.JArrList.add(data);
         this.jArr.put(data);
@@ -79,12 +81,12 @@ public class textProcess {
         dataProcessor.kirjoitaTiedostoon(this.jArr);
     }
     /*
-     * Removes a specified item from the data file and 
+     * Removes a specified item from the data file and the JArrList
      */
     public String removeData(String aika){
         for (JSONObject jsonObject : JArrList) {
             //System.out.println(jsonObject.getString("Aika"));
-            if(jsonObject.getString("Aika").equals(aika)){
+            if(jsonObject.getString("Aika").replaceAll("[^0-9]", "").equals(aika.replaceAll("[^0-9]", ""))){
                 //System.out.println(aika);
                 JArrList.remove(jsonObject);
                 this.jArr = new JSONArray(JArrList);
@@ -129,30 +131,21 @@ public class textProcess {
             case "Aika":
                 Collections.sort(this.JArrList, new AikaCompare());
                 break;
-            case "AikaReverse":
-                //Collections.sort(this.JArrList, new AikaCompare());
-                Collections.reverse(this.JArrList);
-                break;
             case "Kosteus":
                 Collections.sort(this.JArrList, new KosteusCompare());
                 break;
-            case "KosteusReverse":
+            case "Reverse":
                 //Collections.sort(this.JArrList, new KosteusCompare());
                 Collections.reverse(this.JArrList);
                 break;
             case "Lampotila":
                 Collections.sort(this.JArrList, new LampoCompare());
                 break;
-            case "LampotilaReverse":
-                //Collections.sort(this.JArrList, new LampoCompare());
-                Collections.reverse(this.JArrList);
-                break;
             case "Paine":
                 Collections.sort(this.JArrList, new PaineCompare());
                 break;
-            case "PaineReverse":
-                //Collections.sort(this.JArrList, new LampoCompare());
-                Collections.reverse(this.JArrList);
+            case "Sahko":
+                Collections.sort(this.JArrList, new SahkoCompare());
                 break;
             default:
                 break;
@@ -200,5 +193,15 @@ class PaineCompare implements Comparator<JSONObject>{
         Double lhs2 = lhs.getDouble("Paine");
         Double rhs2 = rhs.getDouble("Paine");
         return lhs2 > rhs2 ? -1 : lhs2 < rhs2 ? 1 : 0;
+    }
+}
+class SahkoCompare implements Comparator<JSONObject>{
+    @Override
+    public int compare(JSONObject lhs, JSONObject rhs){
+        //Yeah yeah i know it looks bad but, but works ;D Edit: used to look much worse but still bad
+        Double lhs2 = lhs.getDouble("Sahko");
+        Double rhs2 = rhs.getDouble("Sahko");
+        return lhs2 > rhs2 ? -1 : lhs2 < rhs2 ? 1 : 0;
+        //System.out.println(i);
     }
 }
